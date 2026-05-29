@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import ChatWindow from "@/components/ChatWindow";
 import InputBar from "@/components/InputBar";
 import WelcomeScreen from "@/components/WelcomeScreen";
-import { streamChat } from "@/lib/groq";
+import { streamChat } from "@/lib/gemini";
 import { SYSTEM_PROMPT } from "@/lib/system-prompt";
 
 interface Message {
@@ -44,7 +44,7 @@ export default function Home() {
         setIsTyping(false);
 
         for await (const chunk of stream) {
-          const text = chunk.choices[0]?.delta?.content || "";
+          const text = chunk.text();
           if (text) {
             fullContent += text;
             setStreamingContent(fullContent);
