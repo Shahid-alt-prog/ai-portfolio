@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Shahid Ahmed — Technical Support Engineer | AI Portfolio",
+  title: "Shahid — Technical Support Engineer | AI Portfolio",
   description:
     "Technical Support Engineer specializing in IT Service Management, enterprise support operations, ServiceNow, Active Directory, VPN, Citrix, and AI automation. Based in Bangalore, India.",
   keywords: [
-    "Shahid Ahmed",
+    "Shahid",
     "Technical Support Engineer",
     "IT Service Management",
     "ServiceNow",
@@ -15,9 +15,9 @@ export const metadata: Metadata = {
     "AI Portfolio",
     "Bangalore",
   ],
-  authors: [{ name: "Shahid Ahmed" }],
+  authors: [{ name: "Shahid" }],
   openGraph: {
-    title: "Shahid Ahmed — Technical Support Engineer",
+    title: "Shahid — Technical Support Engineer",
     description: "AI-powered portfolio showcasing enterprise IT support expertise",
     type: "website",
     locale: "en_US",

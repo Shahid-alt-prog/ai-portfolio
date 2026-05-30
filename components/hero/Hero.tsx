@@ -14,10 +14,6 @@ export default function Hero() {
     document.getElementById("chat")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const scrollToExperience = () => {
-    document.getElementById("experience")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <NeuralNetwork />
@@ -49,7 +45,7 @@ export default function Hero() {
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
         >
           <span className="bg-gradient-to-b from-white via-white to-white/20 bg-clip-text text-transparent">
-            SHAHID AHMED
+            SHAHID
           </span>
         </motion.h1>
 
@@ -74,21 +70,17 @@ export default function Hero() {
           Engineering Intelligent IT & AI Systems — Enterprise support, ServiceNow, and AI automation.
         </motion.p>
 
-        {/* Buttons */}
+        {/* Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <GlowButton onClick={scrollToChat}>
             <span className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Start AI Chat
             </span>
-          </GlowButton>
-          <GlowButton variant="secondary" onClick={scrollToExperience}>
-            Explore Experience
           </GlowButton>
         </motion.div>
       </div>

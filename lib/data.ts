@@ -9,7 +9,7 @@ import type {
 } from "@/types";
 
 export const personalInfo = {
-  name: "Shahid Ahmed",
+  name: "Shahid",
   role: "Technical Support Engineer",
   location: "Bangalore, Karnataka",
   email: "shahidahmed542k@gmail.com",
