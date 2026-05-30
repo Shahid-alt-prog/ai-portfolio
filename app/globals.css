@@ -15,65 +15,42 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Jarvis HUD background */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 50%, rgba(0,212,255,0.03) 0%, transparent 40%),
-    radial-gradient(ellipse at 100% 50%, rgba(0,212,255,0.03) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 100%, rgba(20,184,166,0.04) 0%, transparent 40%);
+  background: radial-gradient(ellipse at 50% 30%, rgba(0,212,255,0.03) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* HUD grid overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: 0;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-}
-
-/* Glass card */
 .glass-card {
-  background: rgba(17,24,39,0.8);
-  border: 1px solid rgba(0,212,255,0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0,212,255,0.15);
+  background: rgba(255,255,255,0.06);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,212,255,0.4);
+  background: rgba(255,255,255,0.12);
 }
 
-/* Chat content — production AI style */
 .chat-content p { margin-bottom: 0.6em; line-height: 1.75; }
 .chat-content p:last-child { margin-bottom: 0; }
 .chat-content ul, .chat-content ol { padding-left: 1.3em; margin: 0.5em 0; }
 .chat-content li { margin-bottom: 0.3em; line-height: 1.7; }
-.chat-content li::marker { color: rgba(0,212,255,0.5); }
+.chat-content li::marker { color: rgba(0,212,255,0.4); }
 .chat-content strong { font-weight: 600; color: #f0f9ff; }
 .chat-content em { color: #94a3b8; font-style: italic; }
 .chat-content code {
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.12);
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.1);
   padding: 0.12em 0.4em;
   border-radius: 5px;
   font-size: 0.84em;
@@ -81,8 +58,8 @@ body::after {
   color: #67e8f9;
 }
 .chat-content pre {
-  background: #0d1117;
-  border: 1px solid rgba(0,212,255,0.1);
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.05);
   border-radius: 10px;
   padding: 1em 1.2em;
   overflow-x: auto;
@@ -106,26 +83,12 @@ body::after {
 .chat-content h2 { font-size: 1.1em; }
 .chat-content h3 { font-size: 1em; }
 .chat-content a { color: #00d4ff; text-decoration: underline; text-underline-offset: 2px; }
-.chat-content a:hover { color: #67e8f9; }
 .chat-content blockquote {
-  border-left: 3px solid rgba(0,212,255,0.4);
+  border-left: 3px solid rgba(0,212,255,0.3);
   padding-left: 1em;
   margin: 0.6em 0;
   color: #94a3b8;
-  font-style: italic;
-}
-.chat-content hr {
-  border: none;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
-  margin: 1em 0;
 }
 .chat-content table { border-collapse: collapse; margin: 0.6em 0; width: 100%; font-size: 0.88em; }
-.chat-content th, .chat-content td { border: 1px solid rgba(0,212,255,0.1); padding: 0.5em 0.8em; text-align: left; }
-.chat-content th {
-  background: rgba(0,212,255,0.06);
-  font-weight: 600;
-  color: #67e8f9;
-  font-size: 0.9em;
-}
-.chat-content tr:hover td { background: rgba(0,212,255,0.03); }
+.chat-content th, .chat-content td { border: 1px solid rgba(255,255,255,0.05); padding: 0.5em 0.8em; text-align: left; }
+.chat-content th { background: rgba(0,212,255,0.04); font-weight: 600; color: #67e8f9; }
