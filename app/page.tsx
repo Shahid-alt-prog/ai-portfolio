@@ -1,142 +1,35 @@
-"use client";
-
-import { useState, useCallback } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import ChatWindow from "@/components/ChatWindow";
-import InputBar from "@/components/InputBar";
-import WelcomeScreen from "@/components/WelcomeScreen";
-import { streamChat } from "@/lib/groq";
-import { SYSTEM_PROMPT } from "@/lib/system-prompt";
+import Hero from "@/components/hero/Hero";
+import Footer from "@/components/Footer";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  isError?: boolean;
-}
+const ChatBot = dynamic(() => import("@/components/chat/ChatBot"), { ssr: false });
+const Experience = dynamic(() => import("@/components/sections/Experience"), { ssr: false });
+const Skills = dynamic(() => import("@/components/sections/Skills"), { ssr: false });
+const Dashboard = dynamic(() => import("@/components/sections/Dashboard"), { ssr: false });
+const Education = dynamic(() => import("@/components/sections/Education"), { ssr: false });
+const Strengths = dynamic(() => import("@/components/sections/Strengths"), { ssr: false });
+const Achievements = dynamic(() => import("@/components/sections/Achievements"), { ssr: false });
+const Services = dynamic(() => import("@/components/sections/Services"), { ssr: false });
+const Projects = dynamic(() => import("@/components/sections/Projects"), { ssr: false });
+const Contact = dynamic(() => import("@/components/sections/Contact"), { ssr: false });
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [streamingContent, setStreamingContent] = useState("");
-  const [showWelcome, setShowWelcome] = useState(true);
-
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (showWelcome) setShowWelcome(false);
-
-      const userMsg: Message = { id: crypto.randomUUID(), role: "user", content };
-      setMessages((prev) => [...prev, userMsg]);
-      setIsTyping(true);
-      setStreamingContent("");
-
-      try {
-        const recentMessages = messages.slice(-20);
-        const allMessages = [
-          ...recentMessages.map((m) => ({ role: m.role, content: m.content })),
-          { role: "user" as const, content },
-        ];
-
-        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-              { role: "system", content: SYSTEM_PROMPT },
-              ...allMessages,
-            ],
-            temperature: 0.7,
-            max_tokens: 1024,
-            stream: true,
-          }),
-        });
-
-        if (!res.ok) {
-          const body = await res.json().catch(() => null);
-          throw new Error(body?.error?.message || "Failed to get response");
-        }
-
-        const reader = res.body?.getReader();
-        if (!reader) throw new Error("No reader");
-
-        const decoder = new TextDecoder();
-        let fullContent = "";
-        setIsTyping(false);
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n").filter((l) => l.startsWith("data: "));
-
-          for (const line of lines) {
-            const data = line.slice(6);
-            if (data === "[DONE]") continue;
-            try {
-              const parsed = JSON.parse(data);
-              const text = parsed.choices?.[0]?.delta?.content || "";
-              if (text) {
-                fullContent += text;
-                setStreamingContent(fullContent);
-              }
-            } catch {
-              // skip malformed chunks
-            }
-          }
-        }
-
-        setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "assistant", content: fullContent }]);
-        setStreamingContent("");
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
-        setMessages((prev) => [
-          ...prev,
-          { id: crypto.randomUUID(), role: "assistant", content: msg, isError: true },
-        ]);
-        setStreamingContent("");
-      } finally {
-        setIsTyping(false);
-      }
-    },
-    [messages, showWelcome]
-  );
-
   return (
-    <div className="flex flex-col h-dvh">
+    <main>
       <Header />
-
-      <div className="flex-1 flex flex-col min-h-0">
-        <AnimatePresence mode="wait">
-          {showWelcome ? (
-            <motion.div
-              key="welcome"
-              exit={{ opacity: 0, scale: 0.95, filter: "blur(8px)", transition: { duration: 0.4 } }}
-              className="flex-1"
-            >
-              <WelcomeScreen onSuggestion={sendMessage} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="flex-1 flex flex-col min-h-0"
-            >
-              <ChatWindow messages={messages} isTyping={isTyping} streamingContent={streamingContent} />
-              <div className="px-4 md:px-0 pb-4 pt-1 max-w-3xl mx-auto w-full">
-                <InputBar onSend={sendMessage} disabled={isTyping} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
+      <Hero />
+      <ChatBot />
+      <Experience />
+      <Skills />
+      <Dashboard />
+      <Education />
+      <Strengths />
+      <Achievements />
+      <Services />
+      <Projects />
+      <Contact />
+      <Footer />
+    </main>
   );
 }
