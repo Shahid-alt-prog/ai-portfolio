@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import ChatWindow from "@/components/ChatWindow";
 import InputBar from "@/components/InputBar";
 import WelcomeScreen from "@/components/WelcomeScreen";
-import { streamChat } from "@/lib/gemini";
+import { streamChat } from "@/lib/groq";
 import { SYSTEM_PROMPT } from "@/lib/system-prompt";
 
 interface Message {
@@ -34,20 +34,60 @@ export default function Home() {
       try {
         const recentMessages = messages.slice(-20);
         const allMessages = [
-          { role: "system" as const, content: SYSTEM_PROMPT },
-          ...recentMessages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+          ...recentMessages.map((m) => ({ role: m.role, content: m.content })),
           { role: "user" as const, content },
         ];
 
-        const stream = await streamChat(allMessages);
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              ...allMessages,
+            ],
+            temperature: 0.7,
+            max_tokens: 1024,
+            stream: true,
+          }),
+        });
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          throw new Error(body?.error?.message || "Failed to get response");
+        }
+
+        const reader = res.body?.getReader();
+        if (!reader) throw new Error("No reader");
+
+        const decoder = new TextDecoder();
         let fullContent = "";
         setIsTyping(false);
 
-        for await (const chunk of stream) {
-          const text = chunk.text();
-          if (text) {
-            fullContent += text;
-            setStreamingContent(fullContent);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n").filter((l) => l.startsWith("data: "));
+
+          for (const line of lines) {
+            const data = line.slice(6);
+            if (data === "[DONE]") continue;
+            try {
+              const parsed = JSON.parse(data);
+              const text = parsed.choices?.[0]?.delta?.content || "";
+              if (text) {
+                fullContent += text;
+                setStreamingContent(fullContent);
+              }
+            } catch {
+              // skip malformed chunks
+            }
           }
         }
 
@@ -74,11 +114,21 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-h-0">
         <AnimatePresence mode="wait">
           {showWelcome ? (
-            <motion.div key="welcome" exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }} className="flex-1">
+            <motion.div
+              key="welcome"
+              exit={{ opacity: 0, scale: 0.95, filter: "blur(8px)", transition: { duration: 0.4 } }}
+              className="flex-1"
+            >
               <WelcomeScreen onSuggestion={sendMessage} />
             </motion.div>
           ) : (
-            <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col min-h-0">
+            <motion.div
+              key="chat"
+              initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="flex-1 flex flex-col min-h-0"
+            >
               <ChatWindow messages={messages} isTyping={isTyping} streamingContent={streamingContent} />
               <div className="px-4 md:px-0 pb-4 pt-1 max-w-3xl mx-auto w-full">
                 <InputBar onSend={sendMessage} disabled={isTyping} />

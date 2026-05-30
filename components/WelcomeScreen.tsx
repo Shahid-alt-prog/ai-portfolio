@@ -1,7 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Briefcase, Shield, GraduationCap, Sparkles, Mail, Star } from "lucide-react";
+
+const Scene3D = dynamic(() => import("./Scene3D"), { ssr: false });
 
 interface WelcomeScreenProps {
   onSuggestion: (text: string) => void;
@@ -18,20 +21,28 @@ const suggestions = [
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.6 } },
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.8 } },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 30, scale: 0.9, filter: "blur(6px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+  },
 };
 
 export default function WelcomeScreen({ onSuggestion }: WelcomeScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full px-4 pb-8 relative overflow-hidden">
+      {/* 3D Scene */}
+      <Scene3D />
+
       {/* Background HUD elements */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Corner brackets */}
         <svg className="absolute top-8 left-8 w-16 h-16 text-jarvis-cyan/10" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M0 20V0h20M44 0h20v20M64 44v20H44M20 64H0V44" />
         </svg>
@@ -45,82 +56,60 @@ export default function WelcomeScreen({ onSuggestion }: WelcomeScreenProps) {
           <path d="M0 20V0h20M44 0h20v20M64 44v20H44M20 64H0V44" />
         </svg>
 
-        {/* Horizontal scan lines */}
+        {/* Scan lines */}
         <div className="absolute top-1/3 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-jarvis-cyan/[0.07] to-transparent" />
         <div className="absolute top-2/3 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-jarvis-cyan/[0.07] to-transparent" />
-
-        {/* Vertical accent */}
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gradient-to-b from-transparent via-jarvis-cyan/[0.04] to-transparent" />
       </div>
 
-      {/* Arc reactor - dramatic */}
-      <motion.div
-        initial={{ scale: 0.3, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className="relative mb-10"
-      >
-        <div className="w-40 h-40 relative">
-          {/* Outer glow */}
-          <div className="absolute inset-0 rounded-full bg-jarvis-cyan/[0.03] blur-2xl" />
-
-          {/* Outer ring */}
-          <div className="absolute inset-0 rounded-full border-2 border-jarvis-cyan/20 animate-spin-slow" />
-
-          {/* Tick marks */}
-          {[...Array(12)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-2 bg-jarvis-cyan/30"
-              style={{ transform: `rotate(${i * 30}deg)`, transformOrigin: "50% 80px" }}
-            />
-          ))}
-
-          {/* Second ring */}
-          <div className="absolute inset-3 rounded-full border border-jarvis-cyan/15 animate-spin-slow" style={{ animationDirection: "reverse", animationDuration: "10s" }} />
-
-          {/* Third ring - dashed */}
-          <div className="absolute inset-6 rounded-full border border-dashed border-jarvis-cyan/10 animate-spin-slow" style={{ animationDuration: "20s" }} />
-
-          {/* Inner ring */}
-          <div className="absolute inset-8 rounded-full border border-jarvis-cyan/20" />
-
-          {/* Core */}
-          <div className="absolute inset-10 rounded-full bg-gradient-to-br from-jarvis-cyan/20 to-jarvis-teal/10 animate-arc-pulse flex items-center justify-center shadow-[0_0_40px_rgba(0,212,255,0.15),inset_0_0_20px_rgba(0,212,255,0.1)]">
-            <span className="text-4xl drop-shadow-[0_0_10px_rgba(0,212,255,0.3)]">👋</span>
-          </div>
-
-          {/* Cardinal markers */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-6 h-[2px] bg-jarvis-cyan/50 rounded-full" />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-6 h-[2px] bg-jarvis-cyan/50 rounded-full" />
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 h-6 w-[2px] bg-jarvis-cyan/50 rounded-full" />
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 h-6 w-[2px] bg-jarvis-cyan/50 rounded-full" />
-        </div>
-      </motion.div>
-
       {/* Title block */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="text-center mb-4 relative z-10"
       >
-        <h1 className="text-4xl md:text-5xl font-display font-bold text-jarvis-cream tracking-[0.2em] mb-3">
+        <motion.h1
+          className="text-5xl md:text-6xl font-display font-bold text-jarvis-cream tracking-[0.2em] mb-3"
+          initial={{ opacity: 0, letterSpacing: "0.5em" }}
+          animate={{ opacity: 1, letterSpacing: "0.2em" }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        >
           J.A.R.V.I.S
-        </h1>
-        <div className="flex items-center justify-center gap-3 mb-4">
+        </motion.h1>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex items-center justify-center gap-3 mb-4"
+        >
           <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-jarvis-cyan/40" />
           <div className="flex items-center gap-2">
-            <div className="w-1 h-1 rounded-full bg-jarvis-cyan/60" />
+            <motion.div
+              animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-1 rounded-full bg-jarvis-cyan/60"
+            />
             <span className="text-[10px] font-mono text-jarvis-cyan tracking-[0.4em]">SHAHID</span>
-            <div className="w-1 h-1 rounded-full bg-jarvis-cyan/60" />
+            <motion.div
+              animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+              className="w-1 h-1 rounded-full bg-jarvis-cyan/60"
+            />
           </div>
           <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-jarvis-cyan/40" />
-        </div>
-        <p className="text-jarvis-dim text-base max-w-md mx-auto leading-relaxed">
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="text-jarvis-dim text-base max-w-md mx-auto leading-relaxed"
+        >
           Good evening. I&apos;m Shahid&apos;s personal AI assistant.<br />
           <span className="text-jarvis-muted text-sm">How may I be of service?</span>
-        </p>
+        </motion.p>
       </motion.div>
 
       {/* Suggestion cards */}
@@ -134,18 +123,25 @@ export default function WelcomeScreen({ onSuggestion }: WelcomeScreenProps) {
           <motion.button
             key={text}
             variants={item}
-            whileHover={{ scale: 1.03, y: -3 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.05, y: -4, boxShadow: "0 0 30px rgba(0,212,255,0.15)" }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => onSuggestion(`Tell me about your ${text.toLowerCase()}`)}
-            className="group relative flex flex-col items-center gap-2.5 px-4 py-4 rounded-xl bg-jarvis-surface/40 border border-jarvis-border/30 hover:border-jarvis-cyan/30 hover:bg-jarvis-cyan/[0.04] transition-all duration-300 text-center overflow-hidden"
+            className="group relative flex flex-col items-center gap-2.5 px-4 py-4 rounded-xl bg-jarvis-surface/40 border border-jarvis-border/30 hover:border-jarvis-cyan/40 hover:bg-jarvis-cyan/[0.06] transition-all duration-300 text-center overflow-hidden backdrop-blur-sm"
           >
-            {/* Top accent */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[1px] bg-jarvis-cyan/0 group-hover:bg-jarvis-cyan/50 transition-all duration-300" />
+            {/* Animated top accent */}
+            <motion.div
+              className="absolute top-0 left-1/2 -translate-x-1/2 h-[1px] bg-jarvis-cyan/0 group-hover:bg-jarvis-cyan/60 transition-all duration-500"
+              style={{ width: "0%" }}
+              whileHover={{ width: "60%" }}
+            />
 
-            <div className="w-9 h-9 rounded-lg bg-jarvis-cyan/[0.06] border border-jarvis-cyan/10 group-hover:border-jarvis-cyan/25 flex items-center justify-center transition-all duration-200">
-              <Icon className="w-4 h-4 text-jarvis-muted group-hover:text-jarvis-cyan transition-colors duration-200" />
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-b from-jarvis-cyan/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div className="w-9 h-9 rounded-lg bg-jarvis-cyan/[0.06] border border-jarvis-cyan/10 group-hover:border-jarvis-cyan/30 group-hover:bg-jarvis-cyan/[0.1] flex items-center justify-center transition-all duration-300">
+              <Icon className="w-4 h-4 text-jarvis-muted group-hover:text-jarvis-cyan transition-colors duration-300" />
             </div>
-            <span className="text-[12px] font-medium text-jarvis-dim group-hover:text-jarvis-cream transition-colors duration-200">
+            <span className="text-[12px] font-medium text-jarvis-dim group-hover:text-jarvis-cream transition-colors duration-300">
               {text}
             </span>
           </motion.button>
@@ -156,14 +152,24 @@ export default function WelcomeScreen({ onSuggestion }: WelcomeScreenProps) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.8 }}
         className="mt-10 flex items-center gap-4 text-[9px] text-jarvis-muted/60 font-mono tracking-[0.2em] relative z-10"
       >
-        <span>SYS READY</span>
+        <motion.span
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        >
+          SYS READY
+        </motion.span>
         <span className="w-1 h-1 rounded-full bg-jarvis-cyan/20" />
         <span>ALL SYSTEMS NOMINAL</span>
         <span className="w-1 h-1 rounded-full bg-jarvis-cyan/20" />
-        <span>AWAITING INPUT</span>
+        <motion.span
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
+        >
+          AWAITING INPUT
+        </motion.span>
       </motion.div>
     </div>
   );
